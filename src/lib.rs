@@ -75,7 +75,7 @@ impl RandomOrg {
     }
   }
 
-  pub async fn generate_integers(&self, n: u32, min: i32, max: i32, replacement: bool) -> Result<RandomData<Vec<i32>>> {
+  pub async fn generate_integers(&self, n: u16, min: i32, max: i32, replacement: bool) -> Result<RandomData<Vec<i32>>> {
     let api_key: &str = self.api_key.as_str();
     let mut params = serde_json::Map::new();
     params.insert("apiKey".into(), api_key.into());
