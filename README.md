@@ -12,4 +12,5 @@ This is a project for me to learn Rust, so a lot of stuff is missing and this is
  - `generateUUIDs`
 
 ### Examples
-Please look in the `examples` directory
+Please look in the `examples` directory.
+You will need an API key from [random.org](https://www.random.org/).
