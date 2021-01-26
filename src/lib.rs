@@ -7,6 +7,7 @@ use uuid::Uuid;
 use json_rpc::{JsonRpc, RpcCall};
 
 pub mod json_rpc;
+pub mod validations;
 
 pub struct RandomOrg {
   api_key: String,
@@ -76,6 +77,8 @@ impl RandomOrg {
   }
 
   pub async fn generate_integers(&self, n: u16, min: i32, max: i32, replacement: bool) -> Result<RandomData<Vec<i32>>> {
+    let (n, min, max) = validations::generate_integers(n, min, max)?;
+
     let api_key: &str = self.api_key.as_str();
     let mut params = serde_json::Map::new();
     params.insert("apiKey".into(), api_key.into());
@@ -100,11 +103,13 @@ impl RandomOrg {
 
   pub async fn generate_strings(
     &self,
-    n: u32,
-    length: u16,
+    n: u16,
+    length: u8,
     char_set: RandomStringCharSet,
     replacement: bool,
   ) -> Result<RandomData<Vec<String>>> {
+    let (n, length) = validations::generate_strings(n, length)?;
+
     let api_key: &str = self.api_key.as_str();
     let mut params = serde_json::Map::new();
     params.insert("apiKey".into(), api_key.into());
@@ -128,11 +133,13 @@ impl RandomOrg {
 
   pub async fn generate_gaussians(
     &self,
-    n: u32,
-    mean: f32,
-    std_dev: f32,
+    n: u16,
+    mean: i32,
+    std_dev: i32,
     sig_digits: u8,
   ) -> Result<RandomData<Vec<f64>>> {
+    let (n, mean, std_dev, sig_digits) = validations::generate_gaussians(n, mean, std_dev, sig_digits)?;
+
     let api_key = self.api_key.as_str();
     let mut params = serde_json::Map::new();
     params.insert("apiKey".into(), api_key.into());
@@ -154,7 +161,9 @@ impl RandomOrg {
     Ok(resp.random)
   }
 
-  pub async fn generate_uuids(&self, n: u32) -> Result<RandomData<Vec<Uuid>>> {
+  pub async fn generate_uuids(&self, n: u16) -> Result<RandomData<Vec<Uuid>>> {
+    let n = validations::generate_uuids(n)?;
+
     let api_key = self.api_key.as_str();
     let mut params = serde_json::Map::new();
     params.insert("apiKey".into(), api_key.into());
