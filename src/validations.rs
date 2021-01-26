@@ -1,6 +1,8 @@
 use anyhow::Result;
 use valid::{Validate, ValidationResult};
-use valid::constraint::Bound;
+use valid::constraint::{Bound, Length};
+
+use crate::SeqBound;
 
 fn to_result<C, T>(validation_res: ValidationResult<C, T>) -> Result<T> {
   validation_res
@@ -52,4 +54,12 @@ pub fn generate_uuids(n: u16) -> Result<u16> {
   let validation_res = n.validate("n", &n_bound).result();
 
   to_result(validation_res)
+}
+
+pub fn generate_integer_sequences(n: u16, length: u16, min: SeqBound, max: SeqBound) -> Result<(u16, u16, SeqBound, SeqBound)> {
+  let n_bound = Bound::ClosedRange(1, 1000);
+
+  n.validate("n", &n_bound);
+
+  unimplemented!()
 }

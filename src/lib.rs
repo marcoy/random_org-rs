@@ -1,7 +1,7 @@
 use std::ops::Add;
 
 use anyhow::Result;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use json_rpc::{JsonRpc, RpcCall};
@@ -65,6 +65,13 @@ impl Add for RandomStringCharSet {
 
     RandomStringCharSet::Custom(cset)
   }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+pub enum SeqBound {
+  Uniform(u32),
+  Multiform(Vec<i32>),
 }
 
 impl RandomOrg {
@@ -180,5 +187,25 @@ impl RandomOrg {
       .await?;
 
     Ok(resp.random)
+  }
+
+  pub async fn generate_integer_sequences(&self, n: u16, length: u16, min: SeqBound, max: SeqBound) -> Result<()> {
+    unimplemented!()
+  }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::SeqBound;
+
+  #[test]
+  fn test_seq_bound_serialize() {
+    let sb1 = SeqBound::Uniform(10);
+    let sb1_js = serde_json::to_value(sb1);
+    println!("{:?}", &sb1_js);
+
+    let sb2 = SeqBound::Multiform(vec![5, 100_000, 30]);
+    let sb2_js = serde_json::to_value(sb2);
+    println!("{:?}", &sb2_js);
   }
 }
