@@ -8,6 +8,8 @@ use json_rpc::{JsonRpc, RpcCall};
 
 pub mod json_rpc;
 pub mod validations;
+mod property;
+mod random_org_constraint;
 
 pub struct RandomOrg {
   api_key: String,
@@ -70,8 +72,27 @@ impl Add for RandomStringCharSet {
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 pub enum SeqBound {
-  Uniform(u32),
+  Uniform(i32),
   Multiform(Vec<i32>),
+}
+
+impl property::HasSameVariant for SeqBound {
+  fn same_variant(&self, other: &Self) -> bool {
+    match (self, other) {
+      (SeqBound::Uniform(_), SeqBound::Uniform(_)) => true,
+      (SeqBound::Multiform(_), SeqBound::Multiform(_)) => true,
+      (_, _) => false,
+    }
+  }
+}
+
+impl Into<valid::Value> for SeqBound {
+  fn into(self) -> valid::Value {
+    match self {
+      SeqBound::Uniform(_) => valid::Value::String("Uniform".to_owned()),
+      SeqBound::Multiform(_) => valid::Value::String("Multiform".to_owned()),
+    }
+  }
 }
 
 impl RandomOrg {
@@ -196,7 +217,8 @@ impl RandomOrg {
 
 #[cfg(test)]
 mod tests {
-    use crate::SeqBound;
+  use crate::property::HasSameVariant;
+  use crate::SeqBound;
 
   #[test]
   fn test_seq_bound_serialize() {
@@ -207,5 +229,19 @@ mod tests {
     let sb2 = SeqBound::Multiform(vec![5, 100_000, 30]);
     let sb2_js = serde_json::to_value(sb2);
     println!("{:?}", &sb2_js);
+    assert!(&sb2_js.is_ok())
+  }
+
+  #[test]
+  fn test_same_variant() {
+    let uniform1 = SeqBound::Uniform(10);
+    let uniform2 = SeqBound::Uniform(20);
+    let multiform1 = SeqBound::Multiform(vec![1, 2]);
+
+    let res1 = uniform1.same_variant(&uniform2);
+    assert!(res1);
+
+    let res2 = uniform1.same_variant(&multiform1);
+    assert_eq!(res2, false);
   }
 }
