@@ -1,6 +1,6 @@
 use anyhow::Result;
 use valid::{Validate, ValidationResult};
-use valid::constraint::{Bound, Length};
+use valid::constraint::Bound;
 
 use crate::SeqBound;
 use crate::random_org_constraint::SameVariant;

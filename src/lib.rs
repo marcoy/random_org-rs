@@ -210,9 +210,9 @@ impl RandomOrg {
     Ok(resp.random)
   }
 
-  pub async fn generate_integer_sequences(&self, n: u16, length: u16, min: SeqBound, max: SeqBound) -> Result<()> {
-    unimplemented!()
-  }
+  // pub async fn generate_integer_sequences(&self, n: u16, length: u16, min: SeqBound, max: SeqBound) -> Result<()> {
+  //   unimplemented!()
+  // }
 }
 
 #[cfg(test)]
