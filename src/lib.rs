@@ -210,9 +210,34 @@ impl RandomOrg {
     Ok(resp.random)
   }
 
-  // pub async fn generate_integer_sequences(&self, n: u16, length: u16, min: SeqBound, max: SeqBound) -> Result<()> {
-  //   unimplemented!()
-  // }
+  pub async fn generate_integer_sequences(&self, n: u16, length: SeqBound, min: SeqBound, max: SeqBound, replacement: bool) -> Result<RandomData<Vec<Vec<i32>>>> {
+    let (n, length, min, max) = validations::generate_integer_sequences(n, length, min, max)?;
+
+    let length_value = serde_json::to_value(length)?;
+    let min_value = serde_json::to_value(min)?;
+    let max_value = serde_json::to_value(max)?;
+
+    let api_key = self.api_key.as_str();
+    let mut params = serde_json::Map::new();
+    params.insert("apiKey".into(), api_key.into());
+    params.insert("n".into(), n.into());
+    params.insert("length".into(), length_value);
+    params.insert("min".into(), min_value);
+    params.insert("max".into(), max_value);
+    params.insert("replacement".into(), replacement.into());
+
+    let call = RpcCall::new("generateIntegerSequences".into(), params);
+
+    let resp = self
+      .json_rpc
+      .execute(&self.base_uri, call, |v| {
+        let rand_resp: RandomOrgResponse<Vec<Vec<i32>>> = serde_json::from_value(v)?;
+        Ok(rand_resp)
+      })
+      .await?;
+
+    Ok(resp.random)
+  }
 }
 
 #[cfg(test)]
